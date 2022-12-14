@@ -1,0 +1,18 @@
+
+### Git删除无效远程分支
+
+#### **git remote update -p**
+
+objc
+git remote prune origin --dry-run  // 列出仍在远程跟踪但是远程已被删除的无用分支，上面例子此处应输出  '* [将删除] origin/a'
+
+git remote prune origin  // 清除上面命令列出来分支的远程跟踪，输出 '* [已删除] origin/a'
+
+Git 重置忽略文件
+
+我在使用GIT的过程中，明明写好了规则，但问题不起作用，每次还是重复提交，无法忍受。其实这个文件里的规则对已经追踪的文件是没有效果的。所以我们需要使用rm命令清除一下相关的缓存内容。这样文件将以未追踪的形式出现 然后再重新添加提交一下 .gitignore文件里的规则就可以起作用了
+
+objc
+git rm -r --cached .
+git add .
+git commit -m 'update .gitignore'

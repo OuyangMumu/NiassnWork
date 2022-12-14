@@ -1,0 +1,12 @@
+
+Mac 微信双开
+
+nohup /Applications/WeChat.app/Contents/MacOS/WeChat > /dev/null 2>&1
+
+已损坏，打不开。您应该推出磁盘映像
+
+sudo spctl --master-disable
+
+打开应用程序，将出现已损坏提示的应用拖入终端中（xattr -cr 的后面）
+
+xattr -cr

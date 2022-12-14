@@ -1,0 +1,504 @@
+
+# SVN  操作
+
+
+
+**以下是一些常用命令**
+
+1、将文件checkout到本地目录
+
+svn checkout path（path是服务器上的目录）
+ 例如：svn checkout svn://192.168.1.1/pro/domain
+ 简写：svn co
+
+2、往版本库中添加新的文件
+
+svn add file
+ 例如：svn add test.php(添加test.php)
+ svn add *.php(添加当前目录下所有的php文件)
+
+3、将改动的文件提交到版本库
+
+svn commit -m “LogMessage“ [-N] [--no-unlock] PATH(如果选择了保持锁，就使用–no-unlock开关)
+ 例如：svn commit -m “add test file for my test“ test.php
+ 简写：svn ci
+
+4、加锁/解锁
+
+svn lock -m “LockMessage“ [--force] PATH
+ 例如：svn lock -m “lock test file“ test.php
+ svn unlock PATH
+
+5、更新到某个版本
+
+svn update -r m path
+ 例如：
+ svn update如果后面没有目录，默认将当前目录以及子目录下的所有文件都更新到最新版本。
+ svn update -r 200 test.php(将版本库中的文件test.php还原到版本200)
+ svn update test.php(更新，于版本库同步。如果在提交的时候提示过期的话，是因为冲突，需要先update，修改文件，然后清除svn resolved，最后再提交commit)
+
+简写：svn up
+
+6、查看文件或者目录状态
+
+svn status path（目录下的文件和子目录的状态，正常状态不显示）
+ 【?：不在svn的控制中；M：内容被修改；C：发生冲突；A：预定加入到版本库；K：被锁定】
+ svn status -v path(显示文件和子目录状态)
+ 第一列保持相同，第二列显示工作版本号，第三和第四列显示最后一次修改的版本号和修改人。
+ 注：svn status、svn diff和 svn revert这三条命令在没有网络的情况下也可以执行的，原因是svn在本地的.svn中保留了本地版本的原始拷贝。
+ 简写：svn st
+
+7、删除文件
+
+svn delete path -m “delete test fle“
+ 例如：svn delete svn://192.168.1.1/pro/domain/test.php -m “delete test file”
+ 或者直接svn delete test.php 然后再svn ci -m ‘delete test file‘，推荐使用这种
+ 简写：svn (del, remove, rm)
+
+8、查看日志
+
+svn log path
+ 例如：svn log test.php 显示这个文件的所有修改记录，及其版本号的变化
+
+9、查看文件详细信息
+
+svn info path
+ 例如：svn info test.php
+
+10、比较差异
+
+svn diff path(将修改的文件与基础版本比较)
+ 例如：svn diff test.php
+ svn diff -r m:n path(对版本m和版本n比较差异)
+ 例如：svn diff -r 200:20test.php
+ 简写：svn di 
+
+11、将两个版本之间的差异合并到当前文件
+
+svn merge -r m:n path
+ 例如：svn merge -r 200:205 test.php（将版本200与205之间的差异合并到当前文件，但是一般都会产生冲突，需要处理一下）
+
+12、SVN 帮助
+
+svn help
+ svn help ci
+
+13、版本库下的文件和目录列表
+
+svn list path
+ 显示path目录下的所有属于版本库的文件和目录
+ 简写：svn ls
+
+14、创建纳入版本控制下的新目录
+
+svn mkdir: 创建纳入版本控制下的新目录。
+ 用法:
+ 1、mkdir PATH…
+ 2、mkdir URL…
+ 创建版本控制的目录。
+ 1、每一个以工作副本 PATH 指定的目录，都会创建在本地端，并且加入新增
+ 调度，以待下一次的提交。
+ 2、每个以URL指定的目录，都会透过立即提交于仓库中创建。
+ 在这两个情况下，所有的中间目录都必须事先存在
+
+15、恢复本地修改
+
+svn revert: 恢复原始未改变的工作副本文件 (恢复大部份的本地修改)。revert:
+ 用法: revert PATH…
+ 注意: 本子命令不会存取网络，并且会解除冲突的状况。但是它不会恢复
+ 被删除的目录 
+
+16、代码库URL变更
+
+ svn switch (sw): 更新工作副本至不同的URL。
+ 用法: 1、switch URL [PATH]
+ 2、switch –relocate FROM TO [PATH...]
+
+ 1、更新你的工作副本，映射到一个新的URL，其行为跟“svn update”很像，也会将
+ 服务器上文件与本地文件合并。这是将工作副本对应到同一仓库中某个分支或者标记的
+ 方法。
+ 2、改写工作副本的URL元数据，以反映单纯的URL上的改变。当仓库的根URL变动
+ (比如方案名或是主机名称变动)，但是工作副本仍旧对映到同一仓库的同一目录时使用
+ 这个命令更新工作副本与仓库的对应关系。 
+
+17、解决冲突
+
+svn resolved: 移除工作副本的目录或文件的“冲突”状态。
+ 用法: resolved PATH…
+ 注意: 本子命令不会依语法来解决冲突或是移除冲突标记；它只是移除冲突的
+ 相关文件，然后让 PATH 可以再次提交
+
+**查看修改的文件记录**
+
+svn cat -- 显示特定版本的某文件内容。
+ svn list -- 显示一个目录或某一版本存在的文件列表。
+ svn log -- 显示svn 的版本log，含作者、日期、路径等。
+ svn diff -- 显示特定修改的行级详细信息。
+
+list示例：
+
+svn list http://svn.test.com/svn   #查看目录中的文件。
+ svn list -v http://svn.test.com/svn #查看详细的目录的信息(修订人,版本号,文件大小等)。
+ svn list [-v]            #查看当前当前工作拷贝的版本库URL。
+
+cat示例：
+
+svn cat -r 4 test.c   #查看版本4中的文件test.c的内容,不进行比较。
+
+diff示例：
+
+svn diff        #什么都不加，会坚持本地代码和缓存在本地.svn目录下的信息的不同;信息太多，没啥用处。
+ svn diff -r 3     #比较你的本地代码和版本号为3的所有文件的不同。
+ svn diff -r 3 text.c  #比较你的本地代码和版本号为3的text.c文件的不同。
+ svn diff -r 5:6    #比较版本5和版本6之间所有文件的不同。
+ svn diff -r 5:6 text.c #比较版本5和版本6之间的text.c文件的变化。
+ svn diff -c 6 test.c  #比较版本5和版本6之间的text.c文件的变化。
+
+log示例：
+
+svn log     #什么都不加会显示所有版本commit的日志信息:版本、作者、日期、comment。
+ svn log -r 4:20 #只看版本4到版本20的日志信息，顺序显示。
+ svn log -r 20:5 #显示版本20到4之间的日志信息，逆序显示。
+ svn log test.c #查看文件test.c的日志修改信息。
+ svn log -r 8 -v #显示版本8的详细修改日志，包括修改的所有文件列表信息。
+ svn log -r 8 -v -q  #显示版本8的详细提交日志，不包括comment。
+ svn log -v -r 88:866 #显示从版本88到版本866之间，当前代码目录下所有变更的详细信息 。
+ svn log -v dir #查看目录的日志修改信息,需要加v。
+ svn log http://foo.com/svn/trunk/code/ #显示代码目录的日志信息。
+
+常用命令
+
+svn add file|dir -- 添加文件或整个目录
+ svn checkout -- 获取svn代码
+ svn commit -- 提交本地修改代码
+ svn status  -- 查看本地修改代码情况：修改的或本地独有的文件详细信息
+ svn merge  -- 合并svn和本地代码
+ svn revert  -- 撤销本地修改代码
+ svn resolve -- 合并冲突代码
+ svn help [command] -- 查看svn帮助，或特定命令帮助
+
+svn diff个性化定制
+
+svn配置文件: ~/.subversion/config
+
+修改~/.subversion/config，找到如下配置行：
+
+\# diff-cmd = diff_program (diff, gdiff, etc.)
+ 将上面那个脚本的路径添加进去就行，修改为
+
+diff-cmd = /usr/local/bin/diffwrap.sh #绝对路径
+ 这样svn diff命令就会默认使用vimdiff比较文件。
+
+diffwrap.sh文件
+
+\#! /bin/bash
+
+ \# for svn diff: 修改~/.subversion/config，找到如下配置行：
+ \# diff-cmd = diff_program (diff, gdiff, etc.)
+ \# diff-cmd = ~/bin/diffwrap.sh
+
+ \# 参数大于5时，去掉前5个参数；参数小于5，失败，什么也不做
+ shift 5
+
+ \# 使用vimdiff比较
+ vimdiff "$@"
+
+**参考文献**
+
+使用vimdiff作为svn diff的查看代码工具：https://www.jb51.net/LINUXjishu/734861.html
+
+SVN常用命令: http://blog.csdn.net/sunboy_2050/article/details/6187464
+
+**svn 常用操作命令**
+
+**检出**
+
+| 1 2 3 4 5 6 7 8 | svn checkout [http://](http:)路径(目录或文件的全路径)　[本地目录全路径] --username　用户名 svn checkout [svn://](svn://)路径(目录或文件的全路径)　[本地目录全路径] --username　用户名  # 例子： svn co [svn://localhost/](svn://localhost/)测试工具 /home/testtools --username wzhnsc svn co http://localhost/test/testapp --username wzhnsc svn checkout [svn://localhost/](svn://localhost/)测试工具 /home/testtools --username wzhnsc svn [checkouthttp://localhost/test/testapp](checkouthttp://localhost/test/testapp) --username wzhnsc |
+| --------------- | ------------------------------------------------------------ |
+|                 |                                                              |
+
+注：如果不带--password 参数传输密码的话，会提示输入密码，建议不要用明文的--password 选项。
+ 　 其中 username 与 password前是两个短线，不是一个。
+ 　 不指定本地目录全路径，则检出到当前目录下。
+
+**导出(导出一个干净的不带.svn文件夹的目录树)**
+
+| 1 2 3 4 5 6 7 8 | svn export [-r 版本号] [http://](http:)路径(目录或文件的全路径) [本地目录全路径]　--username　用户名 svn export [-r 版本号] [svn://](svn://)路径(目录或文件的全路径) [本地目录全路径]　--username　用户名 svn export 本地检出的(即带有.svn文件夹的)目录全路径 要导出的本地目录全路径  例子： svn export [svn://localhost/](svn://localhost/)测试工具 /home/testtools --username wzhnsc svn export [svn://localhost/test/testapp](svn://localhost/test/testapp) --username wzhnsc svn export /home/testapp /home/testtools |
+| --------------- | ------------------------------------------------------------ |
+|                 |                                                              |
+
+注：第一种从版本库导出干净工作目录树的形式是指定URL，
+ 如果指定了修订版本号，会导出相应的版本，
+ 如果没有指定修订版本，则会导出最新的，导出到指定位置。
+ 如果省略 本地目录全路径，URL的最后一部分会作为本地目录的名字。
+ 第二种形式是指定 本地检出的目录全路径 到 要导出的本地目录全路径，所有的本地修改将会保留，
+ 但是不在版本控制下(即没提交的新文件，因为.svn文件夹里没有与之相关的信息记录)的文件不会拷贝。
+
+**添加新文件**
+
+| 1 2 3 4 5 6 7 | svn　add　文件名 注：告诉SVN服务器要添加文件了，还要用svn commint -m真实的上传上去！ 例子： svn add test.php ＜－ 添加test.php svn commit -m “添加我的测试用test.php“ test.php svn add *.php ＜－ 添加当前目录下所有的php文件 svn commit -m “添加我的测试用全部php文件“ *.php |
+| ------------- | ------------------------------------------------------------ |
+|               |                                                              |
+
+**提交**
+
+| 1 2 3 4 5 6 7 8 9 10 | svn　commit　-m　“提交备注信息文本“　[-N]　[--no-unlock]　文件名 svn　ci　-m　“提交备注信息文本“　[-N]　[--no-unlock]　文件名 必须带上-m参数，参数可以为空，但是必须写上-m 例子： svn commit -m “提交当前目录下的全部在版本控制下的文件“ * ＜－ 注意这个*表示全部文件 svn commit -m “提交我的测试用test.php“ test.php svn commit -m “提交我的测试用test.php“ -N --no-unlock test.php ＜－ 保持锁就用–no-unlock开关 svn ci -m “提交当前目录下的全部在版本控制下的文件“ * ＜－ 注意这个*表示全部文件 svn ci -m “提交我的测试用test.php“ test.php svn ci -m “提交我的测试用test.php“ -N --no-unlock test.php ＜－ 保持锁就用–no-unlock开关 |
+| -------------------- | ------------------------------------------------------------ |
+|                      |                                                              |
+
+**更新文件**
+
+| 1 2 3 4 5 6 7 8 9 | svn　update svn　update　-r　修正版本　文件名 svn　update　文件名 例子： svn update ＜－ 后面没有目录，默认将当前目录以及子目录下的所有文件都更新到最新版本 svn update -r 200 test.cpp ＜－ 将版本库中的文件 test.cpp 还原到修正版本（revision）200 svn update test.php ＜－ 更新与版本库同步。 　　　　　　　　　　 提交的时候提示过期冲突，需要先 update 修改文件， 　　　　　　　　　　 然后清除svn resolved，最后再提交commit。 |
+| ----------------- | ------------------------------------------------------------ |
+|                   |                                                              |
+
+**删除文件**
+
+| 1 2 3 4 5 6 7 8 9 | svn　delete　[svn://](svn://)路径(目录或文件的全路径) -m “删除备注信息文本” 推荐如下操作： svn　delete　文件名 svn　ci　-m　“删除备注信息文本” 例子： svn delete [svn://localhost/testapp/test.php](svn://localhost/testapp/test.php) -m “删除测试文件test.php” 推荐如下操作： svn delete test.php svn ci -m “删除测试文件test.php” |
+| ----------------- | ------------------------------------------------------------ |
+|                   |                                                              |
+
+**加锁/解锁**
+
+| 1 2 3 4 5 | svn　lock　-m　“加锁备注信息文本“　[--force]　文件名 svn　unlock　文件名 例子： svn lock -m “锁信测试用test.php文件“ test.php svn unlock test.php |
+| --------- | ------------------------------------------------------------ |
+|           |                                                              |
+
+**比较差异**
+
+| 1 2 3 4 5 | svn　diff　文件名 svn　diff　-r　修正版本号m:修正版本号n　文件名 例子： svn diff test.php＜－ 将修改的文件与基础版本比较 svn diff -r 200:201 test.php＜－ 对 修正版本号200 和 修正版本号201 比较差异 |
+| --------- | ------------------------------------------------------------ |
+|           |                                                              |
+
+**查看文件或者目录状态**
+
+| 1 2 3 4 5 6 7 8 | svn st 目录路径/名 svn status 目录路径/名＜－ 目录下的文件和子目录的状态，正常状态不显示 　　　　　　　　　　　　　【?：不在svn的控制中； M：内容被修改；C：发生冲突； 　　　　　　　　　　　　　A：预定加入到版本库；K：被锁定】 svn -v 目录路径/名 svn status -v 目录路径/名＜－ 显示文件和子目录状态 　　　　　　　　　　　　　【第一列保持相同，第二列显示工作版本号， 　　　　　　　　　　　　　 第三和第四列显示最后一次修改的版本号和修改人】 |
+| --------------- | ------------------------------------------------------------ |
+|                 |                                                              |
+
+注：svn status、svn diff和 svn revert这三条命令在没有网络的情况下也可以执行的，
+ 　原因是svn在本地的.svn中保留了本地版本的原始拷贝。
+
+**查看日志**
+
+| 1 2 3 | svn　log　文件名 例子： svn log test.php＜－ 显示这个文件的所有修改记录，及其版本号的变化 |
+| ----- | ------------------------------------------------------------ |
+|       |                                                              |
+
+**查看文件详细信息**
+
+| 1 2 3 | svn　info　文件名 例子： svn info test.php |
+| ----- | ------------------------------------------ |
+|       |                                            |
+
+**SVN 帮助**
+
+| 1 2  | svn　help ＜－ 全部功能选项 svn　help　ci ＜－ 具体功能的说明 |
+| ---- | ------------------------------------------------------------ |
+|      |                                                              |
+
+**查看版本库下的文件和目录列表**
+
+| 1 2 3 4 5 | svn　list　[svn://](svn://)路径(目录或文件的全路径) svn　ls　[svn://](svn://)路径(目录或文件的全路径) 例子： svn list [svn://localhost/test](svn://localhost/test) svn ls [svn://localhost/test](svn://localhost/test) ＜－ 显示[svn://localhost/test](svn://localhost/test)目录下的所有属于版本库的文件和目录 |
+| --------- | ------------------------------------------------------------ |
+|           |                                                              |
+
+**创建纳入版本控制下的新目录**
+
+| 1 2 3 4 5 | svn　mkdir　目录名 svn　mkdir　-m　"新增目录备注文本"　[http://](http:)目录全路径 例子： svn mkdir newdir svn mkdir -m "Making a new dir." [svn://localhost/test/newdir](svn://localhost/test/newdir) |
+| --------- | ------------------------------------------------------------ |
+|           |                                                              |
+
+注：添加完子目录后，一定要回到根目录更新一下，不然在该目录下提交文件会提示“提交失败”
+
+svn update
+
+注：如果手工在checkout出来的目录里创建了一个新文件夹newsubdir，
+ 　再用svn mkdir newsubdir命令后，SVN会提示：
+ 　svn: 尝试用 “svn add”或 “svn add --non-recursive”代替？
+ 　svn: 无法创建目录“hello”: 文件已经存在
+ 　此时，用如下命令解决：
+ 　svn add --non-recursive newsubdir
+ 　在进入这个newsubdir文件夹，用ls -a查看它下面的全部目录与文件，会发现多了：.svn目录
+ 　再用 svn mkdir -m "添hello功能模块文件" svn://localhost/test/newdir/newsubdir 命令，
+ 　SVN提示：
+ 　svn: File already exists: filesystem '/data/svnroot/test/db', transaction '4541-1',
+ 　path '/newdir/newsubdir '
+
+**恢复本地修改**
+
+| 1 2 3 4 5 | svn　revert　[--recursive]　文件名 注意: 本子命令不会存取网络，并且会解除冲突的状况。但是它不会恢复被删除的目录。 例子： svn revert foo.c ＜－ 丢弃对一个文件的修改 svn revert --recursive . ＜－恢复一整个目录的文件，. 为当前目录 |
+| --------- | ------------------------------------------------------------ |
+|           |                                                              |
+
+**把工作拷贝更新到别的URL**
+
+| 1 2 3 | svn　switch　[http://](http:)目录全路径　本地目录全路径 例子： svn switch http://localhost/test/456 . ＜－ (原为123的分支)当前所在目录分支到localhost/test/456 |
+| ----- | ------------------------------------------------------------ |
+|       |                                                              |
+
+**解决冲突**
+
+| 1 2 3 4 5 6 7 8 9 10 11 12 13 | svn　resolved　[本地目录全路径] 例子： $ svn update C foo.c Updated to revision 31. 如果你在更新时得到冲突，你的工作拷贝会产生三个新的文件： $ ls foo.c foo.c.mine foo.c.r30 foo.c.r31 当你解决了foo.c的冲突，并且准备提交，运行svn resolved让你的工作拷贝知道你已经完成了所有事情。 你可以仅仅删除冲突的文件并且提交，但是svn resolved除了删除冲突文件，还修正了一些记录在工作拷贝管理区域的记录数据，所以我们推荐你使用这个命令。 |
+| ----------------------------- | ------------------------------------------------------------ |
+|                               |                                                              |
+
+**不checkout而查看输出特定文件或URL的内容**
+
+| 1 2 3 4 5 6 7 | svn　cat　[http://](http:)文件全路径 例子： svn cat http://localhost/test/readme.txt 19、新建一个分支copy svn copy branchA branchB -m "make B branch" // 从branchA拷贝出一个新分支branchB 20、合并内容到分支merge svn merge branchA branchB // 把对branchA的修改合并到分支branchB |
+| ------------- | ------------------------------------------------------------ |
+|               |                                                              |
+
+1、将文件checkout到本地目录
+
+  svn checkout path（path是服务器上的目录）
+  例如：svn checkout svn://192.168.1.1/pro/domain
+  简写：svn co
+
+2、往版本库中添加新的文件
+
+  svn add file
+  例如：svn add test.php(添加test.php)
+  svn add *.php(添加当前目录下所有的php文件)
+
+3、将改动的文件提交到版本库
+
+  svn commit -m "LogMessage" [-N] [--no-unlock] PATH(如果选择了保持锁，就使用--no-unlock开关)
+  例如：svn commit -m "add test file for my test" test.php
+
+  简写：svn ci
+
+4、加锁/解锁
+
+  svn lock -m "LockMessage" [--force] PATH
+  例如：svn lock -m "lock test file" test.php
+  svn unlock PATH
+
+5、更新到某个版本
+
+  svn update -r m path
+  例如：
+  svn update如果后面没有目录，默认将当前目录以及子目录下的所有文件都更新到最新版本。
+  svn update -r 200 test.php(将版本库中的文件test.php还原到版本200)
+  svn update test.php(更新，于版本库同步。如果在提交的时候提示过期的话，是因为冲突，需要先update，修改文件，然后清除svn resolved，最后再提交commit)
+
+  简写：svn up
+
+6、查看文件或者目录状态
+
+  1）svn status path（目录下的文件和子目录的状态，正常状态不显示）
+  【?：不在svn的控制中；M：内容被修改；C：发生冲突；A：预定加入到版本库；K：被锁定】
+  2）svn status -v path(显示文件和子目录状态)
+  第一列保持相同，第二列显示工作版本号，第三和第四列显示最后一次修改的版本号和修改人。
+  注：svn status、svn diff和 svn revert这三条命令在没有网络的情况下也可以执行的，原因是svn在本地的.svn中保留了本地版本的原始拷贝。
+  简写：svn st
+
+ 7、删除文件
+
+  svn delete path -m "delete test fle"
+  例如：svn delete svn://192.168.1.1/pro/domain/test.php -m "delete test file"
+  或者直接svn delete test.php 然后再svn ci -m 'delete test file‘，推荐使用这种
+  简写：svn (del, remove, rm)
+
+ 8、查看日志
+
+  svn log path
+  例如：svn log test.php 显示这个文件的所有修改记录，及其版本号的变化
+
+9、查看文件详细信息
+
+  svn info path
+  例如：svn info test.php
+ 10、比较差异
+
+  svn diff path(将修改的文件与基础版本比较)
+  例如：svn diff test.php
+    svn diff -r m:n path(对版本m和版本n比较差异)
+  例如：svn diff -r 200:201 test.php
+  简写：svn di
+
+11、将两个版本之间的差异合并到当前文件
+
+  svn merge -r m:n path
+  例如：svn merge -r 200:205 test.php（将版本200与205之间的差异合并到当前文件，但是一般都会产生冲突，需要处理一下）
+
+ 12、SVN 帮助
+
+  svn help
+  svn help ci
+
+以上是常用命令，下面写几个不经常用的
+
+ 13、版本库下的文件和目录列表
+
+  svn list path
+  显示path目录下的所有属于版本库的文件和目录
+
+ 简写：svn ls
+
+14、创建纳入版本控制下的新目录
+
+  svn mkdir: 创建纳入版本控制下的新目录。
+  用法: 1、mkdir PATH...
+    2、mkdir URL...
+
+ 15、恢复本地修改
+
+  svn revert: 恢复原始未改变的工作副本文件 (恢复大部份的本地修改)。revert:
+  用法: revert PATH...
+  注意: 本子命令不会存取网络，并且会解除冲突的状况。但是它不会恢复
+     被删除的目录
+
+ 16、代码库URL变更
+
+   svn switch (sw): 更新工作副本至不同的URL。
+   用法: 1、switch URL [PATH]
+      2、switch --relocate FROM TO [PATH...]
+
+​      1、更新你的工作副本，映射到一个新的URL，其行为跟“svn update”很像，也会将
+​       服务器上文件与本地文件合并。这是将工作副本对应到同一仓库中某个分支或者标记的
+​       方法。
+​      2、改写工作副本的URL元数据，以反映单纯的URL上的改变。当仓库的根URL变动
+​       (比如方案名或是主机名称变动)，但是工作副本仍旧对映到同一仓库的同一目录时使用
+​       这个命令更新工作副本与仓库的对应关系。
+
+ 17、解决冲突
+
+  svn resolved: 移除工作副本的目录或文件的“冲突”状态。
+  用法: resolved PATH...
+  注意: 本子命令不会依语法来解决冲突或是移除冲突标记；它只是移除冲突的
+  相关文件，然后让 PATH 可以再次提交。
+
+ 18、输出指定文件或URL的内容。
+
+  svn cat 目标[@版本]...如果指定了版本，将从指定的版本开始查找。
+  svn cat -r PREV filename > filename (PREV 是上一版本,也可以写具体版本号,这样输出结果是可以提交的)
+
+
+
+
+
+# Cornerstone，出现冲突，并且文件删除后，残留了一个0字节文件怎么办
+
+
+
+
+
+1. 终端中进入该目录后，输入“ls -a” 查看所有文件，包括隐藏文件，有一个“.svn”文件夹
+2. 终端继续输入 “open .svn” 打开.svn 文件夹
+3. ![img](https://i.loli.net/2021/04/14/MxAsJV7C1I2u8vl.jpg)
+
+
+
+4. 用数据库管理工具打开 wc.db (sqlite 数据库)，Navicat 就可以5.打开表“ACTUAL_NODE”,如图所示：![img](https://pic4.zhimg.com/50/v2-cab8409c01e0afe4e67cb65ce19e2d75_hd.jpg?source=1940ef5c
+5. ![img](https://pic4.zhimg.com/80/v2-cab8409c01e0afe4e67cb65ce19e2d75_1440w.jpg?source=1940ef5c)
+
+6.一般情况下该表就一条数据，删除即可
+
+
+
+
+
+SVN 密码错误问题
+
+svn co http://hdsvn.szlanyou.com:81/svn/车联网平台课题/01_I区/01_工程区/ --username ouyanggj --password svnKL96109128

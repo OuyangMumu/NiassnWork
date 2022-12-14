@@ -1,0 +1,137 @@
+pod 'LYLeaksFinder', :git => "https://devcloud.szlanyou.com/gitlab/mobile_development_platform/Project/SZLY-2012/iOS/Common/LYLeaksFinder.git", :branch=> 'develop', :configurations => ['Debug']
+
+
+
+引用  [**MLeaksFinder**](https://github.com/Tencent/MLeaksFinder)    
+
+直接使用 pod '[**MLeaksFinder**](https://github.com/Tencent/MLeaksFinder)'  存在异常， 所以修改使用上面组件
+
+
+
+白名单
+
+[NSMutableArray arrayWithArray:@[
+
+​	@"UITextField"，
+
+​    @"UIFieldEditor",
+
+​    @"UINavigationBar",
+
+​    @"_UIAlertControllerActionView",
+
+​    @"_UIVisualEffectBackdropView",
+
+​    @"UIAlertController"],
+
+  ]
+
+
+
+### 常见内存循环引用错误
+
+1. Block 代码块内使用 self    (系统 Blcok 以及 Masonry 不会造成循环引用)
+
+![img](https://cdn.nlark.com/yuque/0/2021/png/1486549/1636526343380-81553ca8-79a3-4d48-8175-367a70a7adce.png)
+
+
+
+![img](https://cdn.nlark.com/yuque/0/2021/png/1486549/1636526354070-7a65955f-63c1-4d40-94fd-a2df5f41183d.png)
+
+
+
+![img](https://cdn.nlark.com/yuque/0/2021/png/1486549/1636526360861-9427203f-0b22-47b4-b92a-89737e0217ef.png)
+
+![img](https://cdn.nlark.com/yuque/0/2021/png/1486549/1636526368548-fed7bf08-dcfb-419c-8b25-f2fca068de05.png)
+
+
+
+1.  KVO 、 通知  未移除观察者
+
+[[NSNotificationCenter defaultCenter]  removeObserver:**self** name:*** object:nil];
+
+
+
+1.  M V C  互相强引用
+
+A  strong  B     B strong C     C  strong  A
+
+
+
+1.  webView   KVO
+
+
+
+1.  NSTimer  未销毁
+
+
+
+欢迎补充更多类型.......
+
+
+
+### 查看具体强引用链  可参考以下样例：
+
+
+
+1. KVO  强引用
+
+![img](https://cdn.nlark.com/yuque/0/2021/png/1486549/1636526529612-c2828121-9042-4d26-b887-584adf19a161.png)![img](https://cdn.nlark.com/yuque/0/2021/png/1486549/1636526538544-5b818e2d-f505-4184-a46a-a90e02bab261.png)
+
+
+
+
+
+1.  Block 强引用
+
+![img](https://cdn.nlark.com/yuque/0/2021/png/1486549/1636526546858-4a96f526-fce1-4e7e-aed3-88e6de7041c6.png)
+
+
+
+其它内存引用请自行百度摸索  xcode memory graph
+
+https://www.jianshu.com/p/6ce744657646
+
+
+
+
+
+### 处理方法：
+
+1. Block :
+
+
+
+**__strong __typeof**(weakSelf) strongSelf = weakSelf;
+
+
+
+**__strong** **__typeof**(weakSelf) strongSelf = weakSelf;
+
+
+
+@weakify(**self**);  // 推荐
+
+
+
+@strongify(**self**);
+
+
+
+1. KOV:
+
+
+
+- (**void**)dealloc {
+
+   [[NSNotificationCenter defaultCenter] removeObserver:**self**];
+
+}
+
+
+
+1. NSTimer  :
+
+
+
+使用  LYWeakTimer   
